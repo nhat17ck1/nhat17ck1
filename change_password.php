@@ -45,8 +45,7 @@ if(password_verify($currentPassword,$currentUser['password']) && ($password != $
     <label for="password"><strong>Mật Khẩu mới</strong></label> 
     <input type="password" class = "form-control" id = "password" name = "password" placeholder = "Mật khẩu mới ">
     </div>
-
-    
+   
     <p><button type = "submit" class = "btn btn-primary">Đổi mật khẩu</button> </p>
 
     </form>
