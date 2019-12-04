@@ -23,20 +23,20 @@
         <div class="card" >
     <!-- <img class="card-img-top" src="avatars/<?php echo $post['userId'];?>.jpg" alt="<?php echo $post['displayName'];?>"> -->
             <div class="card-body">
-            <h5 class="card-title">
-            <?php if($post['picture']):?> 
-            <img style="width: 100px" class="card-img-top" src="avatars/<?php echo $post['userId'];?>.jpg"> 
-            <?php else: ?>
-            <img src="avatars/no-avatar.jpg" style="width: 100px" class="card-img-top">
-            <?php endif ?>
-            <?php echo $post['displayName'];?>
-            </h5>
-            <p class="card-text"> Đăng lúc: 
-            <?php echo $post['createAt'];?>
-            </p>
-            <p class="card-text">
-            <?php echo $post['content'];?>
-            </p>
+             <h5 class="card-title">
+              <?php if($post['picture']):?> 
+               <img style="width: 100px" class="card-img-top" src="avatars/<?php echo $post['userId'];?>.jpg"> 
+              <?php else: ?>
+               <img src="avatars/no-avatar.jpg" style="width: 100px" class="card-img-top">
+              <?php endif ?>
+              <?php echo $post['displayName'];?>
+             </h5>
+              <p class="card-text"> Đăng lúc: 
+               <?php echo $post['createAt'];?>
+              </p>
+              <p class="card-text">
+               <?php echo $post['content'];?>
+              </p>
             </div>
         </div>
         <br>
