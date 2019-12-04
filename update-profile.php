@@ -45,21 +45,21 @@ if($displayName != '')
 <?php else: ?>
 <div class="card" >
 <div class="card-body">
-<form method = "POST" enctype="multipart/form-data"action="update-profile.php" >
-    <div class = "form-group">
-    <label for="displayName"><strong>Họ tên</strong></label> 
-    <input type="text" class = "form-control" id = "displayName" name = "displayName" placeholder = "Họ tên"value="<?php echo $currentUser['displayName'];?>">
-    </div>
-    <div class = "form-group">
-    <label for="numberPhone"><strong>Số điện thoại</strong></label> 
-    <input type="text" class = "form-control" id = "numberPhone" name = "numberPhone" placeholder = "Số điện thoại"value="<?php echo $currentUser['numberPhone'];?>">
-     </div>
-    <div class="form-group">
-    <label for="avatar"><strong>Ảnh đại diện</strong></label>
-    <input type="file" class="form-control-file" id="avatar"name="avatar">
-  </div>
-    <p><button type = "submit" name="save_pic" class = "btn btn-primary">Cập nhật thông tin cá nhân</button> </p>
-</form>
+    <form method = "POST" enctype="multipart/form-data"action="update-profile.php" >
+        <div class = "form-group">
+            <label for="displayName"><strong>Họ tên</strong></label> 
+            <input type="text" class = "form-control" id = "displayName" name = "displayName" placeholder = "Họ tên"value="<?php echo $currentUser['displayName'];?>">
+        </div>
+        <div class = "form-group">
+            <label for="numberPhone"><strong>Số điện thoại</strong></label> 
+            <input type="text" class = "form-control" id = "numberPhone" name = "numberPhone" placeholder = "Số điện thoại"value="<?php echo $currentUser['numberPhone'];?>">
+         </div>
+        <div class="form-group">
+            <label for="avatar"><strong>Ảnh đại diện</strong></label>
+            <input type="file" class="form-control-file" id="avatar"name="avatar">
+        </div>
+        <p><button type = "submit" name="save_pic" class = "btn btn-primary">Cập nhật thông tin cá nhân</button> </p>
+    </form>
 </div>
 </div>
 <?php endif; ?>
