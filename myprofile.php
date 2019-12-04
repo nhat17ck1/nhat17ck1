@@ -58,8 +58,7 @@ if(isset($_FILES['cover'])) {
       <?php if($currentUser['cover']): ?>
         <img src="cover/<?php echo $currentUser['id'];?>.jpg" >
       <?php else: ?>
-        <img src="cover/default_cover.jpg" >
-        
+        <img src="cover/default_cover.jpg" >       
       <?php endif ?>
     </div>
     <?php if($currentUser['picture']):?> 
@@ -115,9 +114,6 @@ if(isset($_FILES['cover'])) {
   <div class="col-xs-6 .col-md-4">
           <div class="card"style="width:350px;height :600px;right:15%">
             <div class="card-body">
-
-
-
             </div>
           </div>
   </div>
