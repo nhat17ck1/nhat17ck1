@@ -8,7 +8,5 @@ if(!$currentUser){
 $content=$_POST['content'];
 upstatus($currentUser['id'],$content);
 
-
-
 // redirect to homepage
  header('Location: index.php'); ?>
