@@ -14,6 +14,8 @@
   <?php echo"<script>window.open('index.php','_self')</script>";?>
 
 <?php else: ?>
+  <div class="container">
+  <br>
 <div class="alert alert-danger" role="alert">
   Kích hoạt tài khoản thất bại
 </div>
@@ -26,5 +28,6 @@
   </div>
   <button type="submit" class="btn btn-primary">Kích hoạt tài khoản</button>
 </form>
+</div>
 <?php endif; ?>
 <?php include 'footer.php'; ?>

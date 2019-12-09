@@ -27,46 +27,64 @@ function findUserByID($id)
     $stmt->execute(array($id));
     return  $stmt->fetch(PDO::FETCH_ASSOC);
 }
+function findInfoUserByID($id)
+{
+    global $db;
+    $stmt = $db->prepare("SELECT * FROM users_info WHERE id =?");
+    $stmt->execute(array($id));
+    return  $stmt->fetch(PDO::FETCH_ASSOC);
+}
 function UpdateUserPassword($id, $password){
     global $db;
     $hashPassword = password_hash($password,PASSWORD_DEFAULT);
     $stmt=$db->prepare("UPDATE users SET password= ? WHERE id= ?");
     return $stmt->execute(array($hashPassword,$id));
 }
-function updateUserProfile($id, $displayName,$numberPhone){
+function updateUserProfile($id, $displayName,$numberPhone,$birthday){
     global $db;
-    $stmt=$db->prepare("UPDATE users SET displayName= ?,numberPhone=? WHERE id= ?");
-    return $stmt->execute(array($displayName,$numberPhone,$id));
+    $stmt=$db->prepare("UPDATE users SET displayName= ?,numberPhone=? ,birthday=? WHERE id= ?");
+    return $stmt->execute(array($displayName,$numberPhone,$birthday,$id));
 }
-function updateUser($user) {
+function updateUserMyProfile($id,$user_describe,$Relationship_Status,$Lives_In,$Gender){
   global $db;
-  $stmt = $db->prepare("UPDATE users SET displayName = ?, numberPhone = ?, picture = ? WHERE id = ?");
-  $stmt->execute(array($user['displayName'], $user['numberPhone'], $user['picture'], $user['id']));
-  return $user;
+  $stmt=$db->prepare("UPDATE users_info SET user_describe=?,Relationship_Status=?,Lives_In=?,Gender=? WHERE id= ?");
+  return $stmt->execute(array($user_describe,$Relationship_Status,$Lives_In,$Gender,$id));
 }
-function updatecover($user) {
+function updateAvatar($id, $picture) {
   global $db;
-  $stmt = $db->prepare("UPDATE users SET displayName = ?, numberPhone = ?, cover = ? WHERE id = ? ");
-  $stmt->execute(array($user['displayName'], $user['numberPhone'], $user['cover'], $user['id']));
-  return $user;
+  $stmt = $db->prepare("UPDATE users SET picture = ? WHERE id = ?");
+  $stmt->execute(array( $picture, $id));
 }
-
-// function updateAvatarProfile($id,$picture){
-//   global $db;
-//   $stmt=$db->prepare("UPDATE users SET picture= ? WHERE id= ?");
-//   return $stmt->execute(array(1,$id));
-// }
+function updateCover($id, $cover) {
+  global $db;
+  $stmt = $db->prepare("UPDATE users SET cover = ? WHERE id = ?");
+  $stmt->execute(array( $cover, $id));
+}
+function deletepost($post) {
+  global $db;
+  $stmt = $db->prepare("DELETE  FROM posts  WHERE id=?  ");
+  $stmt->execute(array($post));
+  return $post;
+}
+function insert_info_profile($ID,$user_describe,$Relationship_Status,$Lives_In,$Gender){
+  global $db;
+  $stmt=$db->prepare("INSERT INTO users_info (id,user_describe,Relationship_Status,Lives_In,Gender) VALUES (?,? , ?,?,?)");
+  $stmt->execute(array($ID,$user_describe,$Relationship_Status,$Lives_In,$Gender));
+ return $db->lastInsertId();
+}
 function getNewfeeds(){
-    global $db;
-    $stmt=$db->query("SELECT u.*,p.* FROM users AS u JOIN posts as p WHERE u.id= p.userId ORDER BY p.createAt DESC");
-    $stmt->execute();
-    return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+  global $db;
+  $stmt=$db->query("SELECT p.id,p.userId,u.picture,u.displayName as Fullname,p.content,p.createAt FROM users AS u JOIN posts as p WHERE u.id= p.userId ORDER BY p.createAt DESC");
+  $stmt->execute();
+  $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  return $posts;
 }
 function getNewfeedsinprofile($id){
   global $db;
-  $stmt=$db->prepare("SELECT p.*,u.* FROM users AS u JOIN posts as p WHERE u.id= p.userId and u.id = ? ORDER BY p.createAt DESC");
+  $stmt=$db->prepare("SELECT p.*,u.displayName as Fullname,u.picture FROM users AS u JOIN posts as p WHERE u.id= p.userId and u.id = ? ORDER BY p.createAt DESC");
   $stmt->execute(array($id));
-  return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+  $posts= $stmt -> fetchAll(PDO::FETCH_ASSOC);
+  return $posts;
 }
 function upstatus($userId,$content){
     global $db;
@@ -74,12 +92,12 @@ function upstatus($userId,$content){
     $stmt->execute(array($content,$userId));
    return $db->lastInsertId();
 }
-function createUser($displayName, $email, $password,$numberPhone) {
+function createUser($displayName, $email, $password,$numberPhone,$birthday) {
     global $db, $BASE_URL;
     $hashPassword = password_hash($password, PASSWORD_DEFAULT);
     $code = generateRandomString(16);
-    $stmt = $db->prepare("INSERT INTO users (displayName, email, password, status, code, numberPhone) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute(array($displayName, $email, $hashPassword, 0, $code, $numberPhone));
+    $stmt = $db->prepare("INSERT INTO users (displayName, email, password, numberPhone,birthday, status, code) VALUES (?, ?, ?, ?,?, ?, ?)");
+    $stmt->execute(array($displayName, $email, $hashPassword,$numberPhone,$birthday, 0, $code));
     $id = $db->lastInsertId();
     sendEmail($email, $displayName, 'Kích hoạt tài khoản', "Mã kích hoạt tài khoản của bạn là <a href=\"$BASE_URL/activate.php?code=$code\">$BASE_URL/activate.php?code=$code</a>");
     
@@ -171,4 +189,20 @@ function createUser($displayName, $email, $password,$numberPhone) {
       imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);
 
       return $image_p;
+    }
+    function sendFriendRequest($userId1,$userId2){
+      global $db;
+      $stmt = $db->prepare("INSERT INTO friendship(userId1,userId2) value (?,?)");
+      $stmt->execute(array($userId1, $userId2));
+    }
+    function getFriendship($userId1,$userId2){
+      global $db;
+      $stmt = $db->prepare("SELECT * FROM friendship WHERE userId1 = ? AND userId2 = ?");
+      $stmt->execute(array($userId1, $userId2));
+      return $stmt -> fetch(PDO::FETCH_ASSOC);
+    }
+    function removeFriendRequest($userId1,$userId2){
+      global $db;
+      $stmt = $db->prepare("DELETE from friendship where (userId1 = ? AND userId2 = ?) OR ( userId2 = ? AND userId1 = ?)");
+      $stmt->execute(array($userId1, $userId2,$userId1, $userId2));
     }

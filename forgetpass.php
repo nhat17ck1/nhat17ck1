@@ -6,10 +6,9 @@
 <?php
     include 'header.php';
 ?>
-<section class="container-fluid" style="background-color: #e3f2fd; padding :172px">
+<section class="container-fluid" style="background-color: #E9EBEE; padding :100px">
     <section class="row justify-content-center">
         <section>
-<h1><center>Quên mật khẩu</center></h1>
 <?php if(isset($_GET['email'])): ?>
 <?php 
 $email = $_GET['email'];
@@ -23,6 +22,8 @@ if($user && $user['status'] == 1)
 
 ?>
 <?php if ($success): ?>
+    <br>
+    <br>
     <div class="alert alert-success" role="alert">
             Vui lòng kiểm tra email để lấy mật khẩu mới!
     </div>
@@ -30,6 +31,7 @@ if($user && $user['status'] == 1)
 <div class ="alert alert-danger" role="alert"> Không tìm thấy email của bạn!</div>
 <?php endif; ?>
 <?php else : ?>
+    <h1><center>Quên mật khẩu</center></h1>
     <form method="GET">
     <div class ="form-group">
         <div class="card"style="width:350px">

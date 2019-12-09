@@ -11,16 +11,16 @@ if(!$currentUser){
 <?php
     include 'header.php';
 ?>
-<h1>Đổi mật khẩu</h1>
-<?php if(isset($_POST['currentPassword']) && isset($_POST['password'])): ?>
+<?php if(isset($_POST['currentPassword']) && isset($_POST['password'])&&isset($_POST['password1'])): ?>
 <?php 
 $password = $_POST['password'];
 $currentPassword = $_POST['currentPassword'];
+$password1 = $_POST['password1'];
 
 $success = false;
 
 
-if(password_verify($currentPassword,$currentUser['password']) && ($password != $currentPassword))
+if(password_verify($currentPassword,$currentUser['password']) && ($password != $currentPassword)&&($password == $password1)&&($password1!=$currentPassword))
 {
     UpdateUserPassword($currentUser['id'],$password);
     $success =true;
@@ -34,6 +34,8 @@ if(password_verify($currentPassword,$currentUser['password']) && ($password != $
 <div class ="alert alert-danger" role="alert">Đổi mật khẩu thất bại</div>
 <?php endif; ?>
 <?php else : ?>
+<div class="container">
+<h1>Đổi mật khẩu</h1>
 <div class="card" >
 <div class="card-body">
 <form action="change_password.php" method = "POST">
@@ -45,6 +47,10 @@ if(password_verify($currentPassword,$currentUser['password']) && ($password != $
     <label for="password"><strong>Mật Khẩu mới</strong></label> 
     <input type="password" class = "form-control" id = "password" name = "password" placeholder = "Mật khẩu mới ">
     </div>
+    <div class = "form-group">
+    <label for="password"><strong>Mật Khẩu mới (nhập lại)</strong></label> 
+    <input type="password" class = "form-control" id = "password1" name = "password1" placeholder = "Nhập lại mật khẩu mới ">
+    </div>
 
     
     <p><button type = "submit" class = "btn btn-primary">Đổi mật khẩu</button> </p>
@@ -52,6 +58,8 @@ if(password_verify($currentPassword,$currentUser['password']) && ($password != $
     </form>
 </div>
 </div>
+</div>
+
 <?php endif; ?>
 <br>
 <?php include 'footer.php'; ?>
