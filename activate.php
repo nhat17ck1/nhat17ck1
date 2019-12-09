@@ -7,7 +7,6 @@
 <?php
   $code = $_GET['code'];
   $success = false;
-
   $success = activateUser($code);
 ?>
 <?php if ($success): ?>
