@@ -2,15 +2,6 @@
 <?php
 ob_start(); 
 require_once 'init.php';
-// $userprofile=$currentUser['displayName'];
-// $des=$userinfo['user_describe'];
-// $status=$userinfo['Relationship_Status'];
-// $Live=$userinfo['Lives_In'];
-// $numberPhone=$currentUser['numberPhone'];
-// $Gender=$userinfo['Gender'];
-// $birthday=$currentUser['birthday'];
-// $date=date_create($birthday);
-// $dateformat=  date_format($date,"d/m/y");
 $avatar=$currentUser['picture'];
 $covers=$currentUser['cover'];
 if(!$currentUser){
@@ -76,7 +67,7 @@ $dateformat=  date_format($date,"d/m/y");
   }
 ?>
 <?php if ($success): ?>
-<?php echo "<script>window.open('myprofile.php','_self')</script>"; ?>
+<?php echo "<script>window.open('profile.php?id=$userId','_self')</script>"; ?>
 <?php else : ?>
 <div class ="alert alert-danger" role="alert">cập nhật thông tin thất bại</div>
 <?php endif ?>

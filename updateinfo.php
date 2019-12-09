@@ -5,6 +5,7 @@ if(!$currentUser){
     header('Location: index.php');
     exit();
 }
+$user=$currentUser['id'];
  if(isset($_POST['save_info']))
  {
         $des=$_POST['describe'];
@@ -22,7 +23,7 @@ if(!$currentUser){
             
                         updateUserMyProfile($currentUser['id'],$des,$Relationship_Status,$Live,$Gender);
                         updateUserProfile($currentUser['id'],$displayName,$numberPhone,$birthday);
-                        header('Location: myprofile.php'); 
+                        header("Location: profile.php?id=$user"); 
 
             } 
         
@@ -38,12 +39,12 @@ if(!$currentUser){
     {
      
         insert_info_profile($currentUser['id'],$des_insert,$Relationship_Status_insert,$Live_insert,$Gender_insert);
-          header('Location: myprofile.php'); 
+        header("Location: profile.php?id=$user"); 
      }
 
  }
 ?>
 <?php
     echo "<script>alert('cập nhật thất bại')</script>";
-     echo "<script>window.open('myprofile.php','_self')</script>";
+    echo "<script>window.open('profile.php?id=$user','_self')</script>";
  ?>
