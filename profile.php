@@ -44,7 +44,6 @@ $dateformat=  date_format($date,"d/m/y");
       ob_end_clean();
       updateCover($currentUser['id'],$covers);
       $success=true;
-
   }
   if(isset($_FILES['avatar'])) {
     $FILES =$_FILES['avatar'];
@@ -58,7 +57,6 @@ $dateformat=  date_format($date,"d/m/y");
       ob_end_clean();
       updateAvatar($currentUser['id'],$avatar);
       $success=true;
-
   }
   if(isset($_POST['upstatus_profile'])){
   $content=$_POST['content'];
