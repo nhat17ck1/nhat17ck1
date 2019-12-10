@@ -24,7 +24,6 @@ $user=$currentUser['id'];
                         updateUserMyProfile($currentUser['id'],$des,$Relationship_Status,$Live,$Gender);
                         updateUserProfile($currentUser['id'],$displayName,$numberPhone,$birthday);
                         header("Location: profile.php?id=$user"); 
-
             } 
         
  }
@@ -36,8 +35,7 @@ $user=$currentUser['id'];
     $Live_insert=$_POST['Lives_insert'];
     $Gender_insert=$_POST['Gender_'];
      if (isset($_POST['insertinfo']))
-    {
-     
+    {    
         insert_info_profile($currentUser['id'],$des_insert,$Relationship_Status_insert,$Live_insert,$Gender_insert);
         header("Location: profile.php?id=$user"); 
      }
