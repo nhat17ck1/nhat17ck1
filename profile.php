@@ -124,7 +124,7 @@ $dateformat=  date_format($date,"d/m/y");
                     <?php endif ?>
                     <?php if ($currentUser['id']!=$profile['id']) :?>
                     <?php else:?>
-                    <form action="myprofile.php" method="post" enctype="multipart/form-data">
+                    <form action="updateinfo.php" method="post" enctype="multipart/form-data">
                       <ul class="nav pull-left" style="position: absolute;top: 10px;left: 50px;">
                           <li class="dropdown"style="opacity: 0.5;filter: alpha(opacity=50);">
                               <button class="dropdown-toggle btn btn-secondary" data-toggle="dropdown">Change Cover</button> 
@@ -166,7 +166,7 @@ $dateformat=  date_format($date,"d/m/y");
                                 </button>
                               <div class="dropdown-menu">
                                 <a class="dropdown-item">
-                                <form method = "POST" enctype="multipart/form-data"action="myprofile.php"  >
+                                <form method = "POST" enctype="multipart/form-data"action="profile.php"  >
                                 <div class="form-group">
                                     <input type="file" class="form-control-file" id="avatar"name="avatar">
                                 </div>
@@ -351,7 +351,7 @@ $dateformat=  date_format($date,"d/m/y");
             <div class=" col-sm-8">
             <div class="card"style="left:auto;right:auto;top:auto;bottom:auto;width:auto;" >
             <div class="card-body">
-                  <form action="myprofile.php" method="POST">
+                  <form action="profile.php" method="POST">
                       <div class="form-group">
                           <label for="content"><strong>Nội dung</strong></label>
                           <textarea class="form-control" name="content" id="content" rows="3"placeholder="Bạn đang nghĩ gì?"></textarea>		
@@ -391,7 +391,7 @@ $dateformat=  date_format($date,"d/m/y");
                                   {
                                       $value = $_POST['delete_post_profile'];
                                       deletepost($value);
-                                      header("Location: myprofile.php");
+                                      header("Location: profile.php");
                                       }
                                   ?>
                               <?php else:?>
