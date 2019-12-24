@@ -16,6 +16,7 @@ $success = false;
 $user = findUserByEmail($email);
 if($user && $user['status'] == 1)
 {
+    
     $success =ForgetPassword($user['id'], $user['displayName'], $user['email'], $user['password']);
 }
 

@@ -14,8 +14,12 @@ session_start();
 $page=detectPage();
 //connection
 $db = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8", $DB_USER, $DB_PASSWORD);
+$db1= new mysqli($DB_HOST,$DB_USER,$DB_PASSWORD,$DB_NAME);
 //detect login
 $currentUser=null;
+$userinfo=null;
+//
+
 if (isset($_SESSION['userId'])){
    $currentUser=findUserByID($_SESSION['userId']);
    $userinfo=findInfoUserByID($_SESSION['userId']);

@@ -6,11 +6,12 @@ if(!$currentUser){
 }
 $userId=$_POST['id'];
 $profile=findUserByID($userId);
-if(isset($_POST['btnclickSend'])){
-    sendFriendRequest($currentUser['id'],$profile['id'],0);
-}
-else if(isset($_POST['btnclickAccpet'])){
+ if(isset($_POST['btnclickAccpetindex'])){
     updateFriendRequest($profile['id'],$currentUser['id'],1);
     sendFriendRequest($currentUser['id'],$profile['id'],1);
+    
 }
-header('Location: profile.php?id='.$_POST['id']);
+if(isset($_POST['btnclickDelineindex'])){
+    removeFriendRequest($currentUser['id'],$profile['id']);
+}
+header('Location: index.php');

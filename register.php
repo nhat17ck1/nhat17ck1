@@ -8,7 +8,8 @@
 <?php if (!$currentUser):  ?>
 <?php if(isset($_POST['displayName']) && isset($_POST['email']) && isset($_POST['password'])&&isset($_POST['numberPhone'])&&isset($_POST['birthday'])): ?>
 <?php 
-$displayName= $_POST['displayName'];
+$displayName= $_POST['displayName']; 
+
 $email = $_POST['email'];
 $password = $_POST['password'];
 $numberPhone=$_POST['numberPhone'];
@@ -19,7 +20,8 @@ $user =findUserByEmail($email);
     if(!$user)
     {
         $newUserId=createUser($displayName, $email, $password, $numberPhone,$birthday);
-        $success =true;
+      
+            $success =true;
     }
 ?>
 <?php if ($success): ?>

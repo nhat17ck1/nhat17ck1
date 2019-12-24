@@ -2,6 +2,7 @@
 <?php
 ob_start(); 
 require_once 'init.php';
+
 $avatar=$currentUser['picture'];
 $covers=$currentUser['cover'];
 if(!$currentUser){
@@ -14,6 +15,8 @@ $usersinfo=findInfoUserByID($userId);
 $postsprofile=getNewfeedsinprofile($userId);
 $isFollowing =getFriendship($currentUser['id'],$userId);
 $isFollower =getFriendship($userId,$currentUser['id']);
+$get_frnd_num = get_all_friends($userId, false);
+$get_all_friends = get_all_friends($userId, true);
 ?>
 
 <?php
@@ -32,6 +35,7 @@ $dateformat=  date_format($date,"d/m/y");
 ?>
 <?php if(isset($_POST['uploadclick'])||isset($_POST['save_pic'])||isset($_POST['upstatus_profile'])||isset($_POST['save_info'])):?>
 <?php 
+ $success=false;
   if(isset($_FILES['cover'])) {
     $FILES =$_FILES['cover'];
     $fileName = $FILES['name'];
@@ -44,6 +48,7 @@ $dateformat=  date_format($date,"d/m/y");
       ob_end_clean();
       updateCover($currentUser['id'],$covers);
       $success=true;
+
   }
   if(isset($_FILES['avatar'])) {
     $FILES =$_FILES['avatar'];
@@ -57,12 +62,30 @@ $dateformat=  date_format($date,"d/m/y");
       ob_end_clean();
       updateAvatar($currentUser['id'],$avatar);
       $success=true;
+
   }
   if(isset($_POST['upstatus_profile'])){
-  $content=$_POST['content'];
-  upstatus($currentUser['id'],$content);
-  $success=true;
+    $content=$_POST['content'];
+    $prioty1=$_POST['priority1'];
+    $check1 = getimagesize($_FILES["picture_post_icon1"]["tmp_name"]);
+    if($check1 !== false) {
+      $FILES =$_FILES['picture_post_icon1'];
+      $fileName = $FILES['name'];
+      $fileSize = $FILES['size'];
+      $fileTemp = $FILES['tmp_name'];
+        $newImage = resizeImage($fileTemp, 350, 300);
+        ob_start();
+        imagejpeg($newImage);
+        $postImage=ob_get_contents();
+        ob_end_clean();
+        upstatus($currentUser['id'],$content,$postImage,$prioty1);
+        $success=true;
+    }else {
+      $postImage=null;
+      upstatus($currentUser['id'],$content,$postImage,$prioty1);
+     $success=true;
   }
+}
 ?>
 <?php if ($success): ?>
 <?php echo "<script>window.open('profile.php?id=$userId','_self')</script>"; ?>
@@ -77,7 +100,11 @@ $dateformat=  date_format($date,"d/m/y");
                       <div class="well">
                             <?php if($profile['cover']): ?>
                               <img src="cover.php?id=<?php echo $profile['id']?>" style=" box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-                                      <?php if($isFollowing && $isFollower): ?>
+                                      
+                            <?php else: ?>
+                              <img src="cover/default_cover.jpg" style=" box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+                            <?php endif ?>
+                            <?php if($isFollowing && $isFollower): ?>
                                           <div class="alert alert-primary" role="alert"style="position: absolute; right:150px;bottom:-10px">
                                              Bạn bè
                                           </div>
@@ -99,7 +126,7 @@ $dateformat=  date_format($date,"d/m/y");
                                           </form>
                                           <form method="POST" action="add-friend.php">
                                               <input type="hidden" name="id" value="<?php echo $_GET['id'] ; ?>">
-                                          <button type="submit" class="btn btn-primary"style="position: absolute; right:200px;bottom:10px">Đồng ý yêu cầu kết bạn </button>
+                                          <button type="submit" class="btn btn-primary" name="btnclickAccpet"  style="position: absolute; right:200px;bottom:10px">Đồng ý yêu cầu kết bạn </button>
                                           </form>
                                       <?php endif ?>
                                       <?php if (!$isFollower && !$isFollowing):?>
@@ -107,24 +134,21 @@ $dateformat=  date_format($date,"d/m/y");
                                           <?php else: ?>
                                           <form method="POST" action="add-friend.php">
                                               <input type="hidden" name="id" value="<?php echo $_GET['id'] ; ?>">
-                                          <button type="submit" class="btn btn-primary"style="position: absolute; right:20px;bottom:10px">Gửi yêu cầu kết bạn</button>
+                                          <button type="submit" class="btn btn-primary" name="btnclickSend" style="position: absolute; right:20px;bottom:10px">Gửi yêu cầu kết bạn</button>
                                           </form>
                                           <?php endif ?>
                                       <?php endif ?>
                                   <?php endif ?>
-                            <?php else: ?>
-                              <img src="cover/default_cover.jpg" style=" box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-                            <?php endif ?>
                         </div>
                   
                     <?php if($profile['picture']):?> 
-                    <img src="avatar.php?id=<?php echo $profile['id']?>" alt="Avatar" class="img-raised rounded-circle img-fluid"style="height: 174px; width: 170px;">
+                    <img src="avatar.php?id=<?php echo $profile['id']?>" alt="Avatar" class="img-raised rounded-circle img-fluid border border-info"style="height: 174px; width: 170px;">
                     <?php else: ?>
-                    <img src="avatars/no-avatar.jpg" alt="Avatar" class="img-raised rounded-circle img-fluid"style="height: 174px; width: 170px";>
+                    <img src="avatars/no-avatar.jpg" alt="Avatar" class="img-raised rounded-circle img-fluid border border-info"style="height: 174px; width: 170px";>
                     <?php endif ?>
                     <?php if ($currentUser['id']!=$profile['id']) :?>
                     <?php else:?>
-                    <form action="updateinfo.php" method="post" enctype="multipart/form-data">
+                    <form action="profile.php?id=<?php echo $currentUser['id']?>" method="post" enctype="multipart/form-data">
                       <ul class="nav pull-left" style="position: absolute;top: 10px;left: 50px;">
                           <li class="dropdown"style="opacity: 0.5;filter: alpha(opacity=50);">
                               <button class="dropdown-toggle btn btn-secondary" data-toggle="dropdown">Change Cover</button> 
@@ -156,28 +180,30 @@ $dateformat=  date_format($date,"d/m/y");
       <div class="row">
             <div class="col-sm-4" style="border-radius: 5px;">
                       
-                <div class="card"style="height :882px" >
+                <div class="card"style="height :670px" >
                     <div class="card-body">
                     <?php if ($currentUser['id']!=$profile['id']) :?>
                     <?php else:?>
-                      <div class="btn-group">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" >
-                                <img src="icon/camera.png" alt="avatar" style="width: 25px;height: 25px">
-                                </button>
-                              <div class="dropdown-menu">
-                                <a class="dropdown-item">
-                                <form method = "POST" enctype="multipart/form-data"action="profile.php"  >
-                                <div class="form-group">
-                                    <input type="file" class="form-control-file" id="avatar"name="avatar">
+                      <form method = "POST" enctype="multipart/form-data"action="profile.php?id=<?php echo $currentUser['id']?>"  >
+                      <ul class="nav pull-left" style="position: absolute;bottom: 730px;left: 111px;">
+                          <li class="dropdown"style="opacity: 0.8;filter: alpha(opacity=50);">
+                              <button class="dropdown-toggle btn btn-secondary" data-toggle="dropdown"><img src="icon/camera.png" alt="avatar" style="width: 25px;height: 25px"></button> 
+                              <div class="dropdown-menu"style="width:200px;height: 180px;">
+                                <center>
+                                <p><strong>Select avatar</strong> and then click the <br> <strong>Update avatar
+                                <label class='btn btn-info'style="width:200px;">
+                                <input type='file' id="avatar"name="avatar" size='60' />
+                                </label>
+                                <button name='save_pic' class='btn btn-info'>Update</button>
+                                </strong></p>
+                                  </center>
                                 </div>
-                                    <p><button name="save_pic" class = "btn btn-primary">Update</button> </p>
-                                </form>
-                                </a>
-                              </div>
-                      </div>
+                            </li>
+                        </ul>
+                        </form>
                       <?php endif?>
                 
-                        <!-- asfasdfasdfasdfasdf -->
+                        <!-- Sua -->
                         <?php if ($currentUser['id']!=$profile['id']) :?>
                         <?php else:?>
                         <?php if(!$userinfo['id']):?>
@@ -246,7 +272,7 @@ $dateformat=  date_format($date,"d/m/y");
                                 </div>
                               </div>
                                                       
-                          <!-- dfjhasdfhjkgasdjkfh -->
+                          <!--  -->
                           <?php endif?>
                           <?php endif?>
                           <?php if ($currentUser['id']!=$profile['id']) :?>
@@ -347,15 +373,56 @@ $dateformat=  date_format($date,"d/m/y");
                    </div>
                   </div>
                   <br>
+                  <div class="card"style="height :420px" >
+                  <div class="card-body">
+                  <h4 style = "font-family:inherit;color:black"><strong>
+                  <a href="friends.php?id=<?php echo $profile['id'] ?>">Friends<span class="badge"><?php echo $get_frnd_num;?></span></a>
+                  </strong></h4>
+                  <div class="target" style="height:330px;overflow:scroll;" >
+                  <div class="all_users1">
+                  <div class="usersWrapper1">
+                
+
+                        <?php
+                        $check=null;
+                        if($get_frnd_num > 0){
+                            foreach($get_all_friends as $row){
+                               $check=$row->picture;
+                           
+                                echo  $check!=null ? '<div class="user_box1">
+                                        <div class="user_img1"><a href="profile.php?id='.$row->id.'"</a> <img src="data:image/jpeg;base64,'.base64_encode($row->picture).'" alt="Profile image"></div>
+                                        <a href="profile.php?id='.$row->id.'"<div class="user_info1"><span>'.$row->displayName.'</span></div> </a>' : '<div class="user_box1">
+                                        <div class="user_img1"><a href="profile.php?id='.$row->id.'"</a> <img src="avatars/no-avatar.jpg" "></div>
+                                        <a href="profile.php?id='.$row->id.'"<div class="user_info1"><span>'.$row->displayName.'</span></div> </a>' ;
+                            }
+                        }
+                        else{
+                            echo '<h4>You have no friends!</h4>';
+                        }
+                        ?>
+                        
+                              </div>
+                              </div>
+                              </div>
+                         
+                  </div>
+                        </div>
             </div>
             <div class=" col-sm-8">
             <div class="card"style="left:auto;right:auto;top:auto;bottom:auto;width:auto;" >
             <div class="card-body">
-                  <form action="profile.php" method="POST">
+                  <form action="profile.php?id=<?php echo $currentUser['id']?>" method="POST"enctype="multipart/form-data">
                       <div class="form-group">
                           <label for="content"><strong>Nội dung</strong></label>
-                          <textarea class="form-control" name="content" id="content" rows="3"placeholder="Bạn đang nghĩ gì?"></textarea>		
+                          <textarea class="form-control" name="content" id="content" rows="3"placeholder="Bạn đang nghĩ gì?"required></textarea>		
                       </div>
+                      <select id="select_priot1" class="fas btn btn-white" name="priority1"style="position: absolute; left:90px;top:156px;background-color: #FFFFFF">
+                                <option class="fas" value="public"title="Mọi người">&#xf57d; Mọi người</option>
+                                <option class="fas"value="friend"title="Bạn bè">&#xf500; Bạn bè</option> 
+                                <option class="fas"value="onlyme"title="Chỉ mình tôi">&#xf023; Chỉ mình tôi</option>
+                            </select>    
+                      <img src="icon/camera.png" style="width:30px;height:30px;position: absolute; left:250px;top:160px" onclick="triggerClick1()"> 
+                      <input type="file" class="form-control-file" id="picture_post_icon1"name="picture_post_icon1" style="display: none;">
                       <button type="submit" name="upstatus_profile" class="btn btn-primary">Đăng</button>
                   </form>
             </div>
@@ -363,43 +430,187 @@ $dateformat=  date_format($date,"d/m/y");
         	<br>
             <div class="card"style="left:auto;right:auto;top:auto;bottom:auto;width:auto;">
             <div class="card-body">
-            <div class="target" ><center><strong>
+            <div class="target" style="height:832px;overflow:scroll;" ><center><strong>
             </strong></center> <span></span><br />
                 <?php foreach ($postsprofile as $posts):?>
                   <div class="col-sm-12">
-                  <form  method="POST">
-                      <span class="card" >
+                
+                      <div class="card" >
                           <div class="card-body"style=" box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
                             <h5 class="card-title">
                               <?php if($posts['picture']):?> 
-                              <img style="width: 100px" class="card-img-top" src="avatar.php?id=<?php echo $posts['userId']?>"> 
+                              <img style="width: 100px" class="card-img-top border border-info" src="avatar.php?id=<?php echo $posts['userId']?>"> 
                               <?php else: ?>
-                              <img src="avatars/no-avatar.jpg" style="width: 100px" class="card-img-top">
+                              <img src="avatars/no-avatar.jpg" style="width: 100px" class="card-img-top border border-info">
                               <?php endif ?>
                               <?php echo $posts['Fullname'];?>
                               </h5>
                               <p class="card-text"> Đăng lúc: 
                               <?php echo $posts['createAt'];?>
                               </p>
+                              <p class="card-text"><center>
+                              <?php if($posts['picture_post']):?> 
+                              <?php echo '<img src="data:image/jpeg;base64,'.base64_encode( $posts['picture_post']).'"/class="rounded mx-auto d-block" style="width:45%;height:40% ">'?>
+                              <?php else: ?>
+                              <!-- <img src="icon/no-image.png" style="width:45%;height:40% " class="card-img-top"> -->
+                              <?php endif ?> 
+                              </center>
+                              </p>
+                      
                               <p class="card-text">
                               <?php echo $posts['content'];?>
                               </p>
-                              <?php if($posts['Fullname'] == $currentUser['displayName']):?>
-                                <div class="col"style="text-align: right;position: absolute; left:8px;top:8px "><button type="submit" name="delete_post_profile" value = <?php echo $posts['id'] ?>  class="btn btn-danger" >Xóa</button></div>
-                                  <?php 
+                              <form  method="POST">
+                              <div class="col"style="text-align: right;position: absolute; left:8px;top:8px ">
+                                  <?php if($posts['Fullname'] == $currentUser['displayName']):?>
+                         
+                                  <select class="fas btn" id="priority3"name="priority3"  style="background-color: #FFFFFF">
+                            
+                                <?php if($posts['priority']=='public'):  ?>
+
+                                <option class="fas" value="public"title="Mọi người">&#xf57d; Mọi người</option>
+                                <option class="fas" value="friend"title="Bạn bè">&#xf500; Bạn bè</option> 
+                                <option class="fas"value="onlyme"title="Chỉ mình tôi">&#xf023; Chỉ mình tôi</option>
+                                <?php endif; ?>
+                                <?php if($posts['priority']=='friend'):  ?>
+                                <option class="fas"value="friend"title="Bạn bè">&#xf500; Bạn bè</option> 
+                                <option class="fas"value="public"title="Mọi người">&#xf57d; Mọi người</option>
+                                <option class="fas"value="onlyme"title="Chỉ mình tôi">&#xf023; Chỉ mình tôi</option>
+                                <?php endif; ?>
+                                <?php if($posts['priority']=='onlyme'):  ?>
+                                    
+                                <option class="fas"value="onlyme"title="Chỉ mình tôi">&#xf023; Chỉ mình tôi</option>
+                                <option class="fas"value="public"title="Mọi người">&#xf57d; Mọi người</option>
+                                <option class="fas"value="friend"title="Bạn bè">&#xf500; Bạn bè</option> 
+                                <?php endif; ?>
+                                    
+                             
+                            </select>
+                      
+                             <button  type="submit" id="priority3_btn"name="priority3_btn" value = <?php echo $posts['id'] ?>  class="fas btn btn-outline-dark " >&#xf102;</button> 
+                        
+                            <?php 
+                                        if(isset($_POST['priority3_btn']))
+                                        {
+                                            $valuebtn=$_POST['priority3_btn'];
+                                            $value = $_POST['priority3'];
+                                            updateProrisifity($valuebtn,$value);
+                                
+                                            header("Location: profile.php?id=$userId");
+                                            }
+                                        ?>
+                               
+                            
+                               <button type="submit" name="delete_post_profile" value = <?php echo $posts['id'] ?>  class="btn btn-danger" >Xóa</button>  
+                                <?php 
                                   if(isset($_POST['delete_post_profile']))
                                   {
-                                      $value = $_POST['delete_post_profile'];
+                                    $value = $_POST['delete_post_profile'];
+                                    if (userLiked($posts['id'],$currentUser{'id'})){
+                                      deletelike($currentUser['id'],$posts['id']);
                                       deletepost($value);
-                                      header("Location: profile.php");
+                                      header("Location: profile.php?id=$userId");;
+                                      }else{
+                                      deletepost($value);
+                                      header("Location: profile.php?id=$userId");}
                                       }
+                              
                                   ?>
-                              <?php else:?>
-                              <?php endif;?>
+                            <?php else:?>
+                            <?php endif;?>
+                            </form>
+                            </div>
+                            <form  method="POST">
+                            <div class="row">
+                            <?php $countlike=getLikes($posts['id']);
+                             $countcommemnt=getcountcomments($posts['id'])
+                            ;?>
+                                        <div class="btn-group"style="position: relative;bottom:6px;left:23px">
+                                                <?php if (userLiked($posts['id'],$currentUser{'id'})): ?>
+                                                <a class="btn"name="unlike"id="unlike"href="like1.php?type=unlike&id=<?php echo $posts['id'] ?>"><i style='font-size:20px' class='far fa-thumbs-up'data-toggle="tooltip" title="Cảm xúc của bạn với status này!!"></i> Thích<span class="badge badge-primary  rounded-circle" ><?php echo implode(" ",$countlike);?></span></a>
+                                                <?php else:?>
+                                                <a class="btn"name="like"id="like"href="like1.php?type=like&id=<?php echo $posts['id'] ?>"style='color:black'><i style='font-size:20px' class='far fa-thumbs-up'data-toggle="tooltip" title="Cảm xúc của bạn với status này!!"></i> Thích<span class="badge badge-light  rounded-circle"><?php echo implode(" ",$countlike);?></span></a>
+                                                <?php endif ?>
+                                        </div>&emsp;&emsp;
+                                        <div >
+                                
+                                            <h9 aria-haspopup="true" aria-expanded="false"><i style='font-size:20px' class='far fa-comment-alt'data-toggle="tooltip" title="Cảm nghĩ của bạn về bài viết này!"></i> Bình luận<span class="badge badge-light  rounded-circle"><?php echo implode(" ",$countcommemnt);?></span></h9>
+                                           
+                                        </div>&emsp;&emsp;
+                                  
+                                            <div>
+                                                <h9 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i style='font-size:20px' class='fa fa-share'data-toggle="tooltip" title="Chia sẻ với bạn bè"></i> Chia sẻ </h9>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">Chia sẻ ngay (Công khai)</a>
+                                                    <a class="dropdown-item" href="#">Chia sẻ ...</a>
+                                                    <a class="dropdown-item" href="#">Gửi dưới dạng tin nhắn</a>
+                                                    <a class="dropdown-item" href="#">Chia sẻ trên dòng thời gian với bạn bè</a>
+                                                    <a class="dropdown-item" href="#">Chia sẻ lên trang</a>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    </form>
+                                    <?php $getcomment=getcomment($posts['id']);
+                                   
+                                   ?>
+                                    <?php if(usercommentd($posts['id'],$currentUser['id'])): ?>
+                                    <div class="target" style="height:200px;overflow:scroll;" >
+                                            <?php foreach ($getcomment as $postss):?>
+                                                
+                                          <div class="card" >
+                                          <div class="card-body">
+                                                        <h5 class="card-title">
+                                                            <?php if($postss['picture']):?> 
+                                                            <img style="width: 50px;height: 50px" class="card-img-top border border-primary" src="avatar.php?id=<?php echo $postss['userId']?>">  
+                                                            <?php else: ?>
+                                                            <img src="avatars/no-avatar.jpg" style="width: 50px;height: 50px" class="card-img-top border border-primary">
+                                                            <?php endif ?> 
+                                                            <a href="profile.php?id=<?php echo $postss['userId'] ?>"><div style="position: absolute; left:80px;top:20px " ><?php echo $postss['Fullname']?> </div> </a>
+                                                        </h5> 
+                                
+                                                        <p class="card-text"style="position: absolute; left:80px;top:50px" > Bình luận lúc: 
+                                                            <?php echo $postss['createdAt'];?>
+                                                        </p>
+                                                        <p >
+                                                            <?php echo $postss['content'];?>
+                                                        </p>
+                                                    <div class="col"style="text-align: right;position: absolute; left:8px;top:8px ">
+                                                    <form  method="POST">
+                                                        <button  type="submit" name="deletecomment" value = <?php echo $postss['id_'] ?>  class="btn btn-danger" >Xóa</button>   
+                                                                  
+                                                                        <?php 
+                                                                        if(isset($_POST['deletecomment']))
+                                                                        {
+                                                                            $value_commnet=$_POST['deletecomment'];
+                                                                          
+                                                                            deletecomment($value_commnet);
+                                                                            header("Location: profile.php?id=$userId");
+                                                                            }
+                                                                        ?>
+
+                                                    </form>
+                                                        </div>  
+                                                        </div>  
+                                                </div>
+                                            <?php endforeach ?>
+                                                            </div>
+                                    <?php else:?>
+                                            <div></div>
+                                    <?php endif?>
+                                  
+                                
+                                    <form action="upcomment.php?type=upcommentprofile&id=<?php echo $posts['id'] ?>" method="POST" >
+                                        <div class="form-group">
+                                            <textarea style="height:50px" class="form-control" name="contentss" id="contentss" rows="3"placeholder="Thêm bình luận..."></textarea>                                
+                                        </div>        
+                                        <button type="submit" class="btn btn-primary" name="upcomment">comment</button>
+                                    </form>	
+                  
                               </div>
-                      </span>
+                              </div>
+                              
                       <br>
-                      </form>
+                   
                   </div>
                   <?php endforeach ?>
                   </div>

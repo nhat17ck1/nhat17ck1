@@ -3,7 +3,7 @@ ob_start();
 require 'init.php';
 if(!$currentUser){
     header('Location: index.php');
-    ob_start();
+   exit();
 }
 //require 'functions.php';
 ?>
