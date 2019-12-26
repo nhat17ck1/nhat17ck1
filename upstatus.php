@@ -14,17 +14,17 @@ if(isset($_POST['index_post'])){
         $fileName = $FILES['name'];
         $fileSize = $FILES['size'];
         $fileTemp = $FILES['tmp_name'];
-          $newImage = resizeImage($fileTemp, 350, 300);
-          ob_start();
-          imagejpeg($newImage);
-          $postImage=ob_get_contents();
-          ob_end_clean();
-          upstatus($currentUser['id'],$content,$postImage,$prioty);
-        }else {
-            $postImage=null;
-            upstatus($currentUser['id'],$content,$postImage,$prioty);
-        }
-     
+        $newImage = resizeImage($fileTemp, 350, 300);
+        ob_start();
+        imagejpeg($newImage);
+        $postImage=ob_get_contents();
+        ob_end_clean();
+        upstatus($currentUser['id'],$content,$postImage,$prioty);
+    }
+    else {
+        $postImage=null;
+        upstatus($currentUser['id'],$content,$postImage,$prioty);
+    } 
 }
 
 
