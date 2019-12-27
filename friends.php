@@ -37,8 +37,7 @@ $get_all_friends = get_all_friends($userId, true);
                                         <div class="user_img"><a href="profile.php?id='.$row->id.'"</a> <img src="data:image/jpeg;base64,'.base64_encode($row->picture).'" alt="Profile image"></div>
                                         <a href="profile.php?id='.$row->id.'"<div class="user_info"><span>'.$row->displayName.'</span><a href="profile.php?id='.$row->id.'" class="see_profileBtn">See profile</a></div> </a>' : '<div class="user_box">
                                         <div class="user_img"><a href="profile.php?id='.$row->id.'"</a> <img src="avatars/no-avatar.jpg" class="card-img-top;""></div>
-                                        <a href="profile.php?id='.$row->id.'"<div class="user_info"><span>'.$row->displayName.'</span><a href="profile.php?id='.$row->id.'" class="see_profileBtn">See profile</a></div> </a>' ;
-                 
+                                        <a href="profile.php?id='.$row->id.'"<div class="user_info"><span>'.$row->displayName.'</span><a href="profile.php?id='.$row->id.'" class="see_profileBtn">See profile</a></div> </a>' ;            
                     }
                 }
                 else{
