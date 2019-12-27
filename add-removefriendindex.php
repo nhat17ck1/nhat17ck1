@@ -9,7 +9,6 @@ $profile=findUserByID($userId);
  if(isset($_POST['btnclickAccpetindex'])){
     updateFriendRequest($profile['id'],$currentUser['id'],1);
     sendFriendRequest($currentUser['id'],$profile['id'],1);
-    
 }
 if(isset($_POST['btnclickDelineindex'])){
     removeFriendRequest($currentUser['id'],$profile['id']);
