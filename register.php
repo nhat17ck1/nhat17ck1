@@ -72,6 +72,7 @@ $user =findUserByEmail($email);
         </section>
     </section>
 </section>
+
 <?php endif; ?>
 <?php else:?>
     <?php echo"<script>window.open('index.php','_self')</script>";?>

@@ -29,5 +29,6 @@
   <button type="submit" class="btn btn-primary">Kích hoạt tài khoản</button>
 </form>
 </div>
+
 <?php endif; ?>
 <?php include 'footer.php'; ?>
