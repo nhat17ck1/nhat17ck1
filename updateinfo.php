@@ -15,8 +15,7 @@ if(isset($_POST['save_info']))
     $Gender=$_POST['Gender_'];
     $displayName = $_POST['displayName'];
     $numberPhone=$_POST['numberPhone'];
-    $birthday=$_POST['birthday'];
-    
+    $birthday=$_POST['birthday'];   
     // $birthday=$_POST['birthday'];
     if(isset($_POST['save_info']))
     {   
