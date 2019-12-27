@@ -4,7 +4,6 @@ if(!$currentUser){
     header('Location: index.php');
     exit();
 }
-
 if(isset($_GET['type'],$_GET['id']))
 {
     $content=$_POST['contents'];
