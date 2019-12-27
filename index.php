@@ -135,23 +135,9 @@ $get_frnd_nums = get_all_friends($user, false);
                              
                             </select>
                       
-                             <button  type="submit" id="priority3_btn"name="priority3_btn" value = <?php echo $posts['id'] ?>  class="fas btn btn-outline-dark " >&#xf102;</button> 
-                        
+                            <button  type="submit" id="priority3_btn"name="priority3_btn" value = <?php echo $posts['id'] ?>  class="fas btn btn-outline-dark " >&#xf102;</button>                   
                             <?php 
-                                        if(isset($_POST['priority3_btn']))
-                                        {
-                                            $valuebtn=$_POST['priority3_btn'];
-                                            $value = $_POST['priority3'];
-                                            updateProrisifity($valuebtn,$value);
-                                
-                                            header("Location: index.php");
-                                            }
-                                        ?>
-                               
-                            
-                                <button type="submit" name="delete" value = <?php echo $posts['id'] ?>  class="btn btn-danger" >Xóa</button>   
-                                <?php 
-                                if(isset($_POST['delete']))
+                                if(isset($_POST['priority3_btn']))
                                 {
                                     $value = $_POST['delete'];
                                     
@@ -172,31 +158,30 @@ $get_frnd_nums = get_all_friends($user, false);
                                 <select class="fas btn" id="priority3"name="priority3"  style="background-color: #FFFFFF">
                                 <?php if($posts['priority']=='public'):  ?>
 
-                                <option class="fas" value="public"title="Mọi người">&#xf57d; Mọi người</option>
-                               
-                                <?php endif; ?>
-                                <?php if($posts['priority']=='friend'):  ?>
-                                <option class="fas"value="friend"title="Bạn bè">&#xf500; Bạn bè</option> 
-                             
-                                <?php endif; ?>
-                                <?php if($posts['priority']=='onlyme'):  ?>
-                                    
-                                <option class="fas"value="onlyme"title="Chỉ mình tôi">&#xf023; Chỉ mình tôi</option>
-                               
-                                <?php endif; ?>
-                                 </select>
-                            <?php endif;?>
+                            <option class="fas" value="public"title="Mọi người">&#xf57d; Mọi người</option>
+                            
+                            <?php endif; ?>
+                            <?php if($posts['priority']=='friend'):  ?>
+                            <option class="fas"value="friend"title="Bạn bè">&#xf500; Bạn bè</option> 
+                            
+                            <?php endif; ?>
+                            <?php if($posts['priority']=='onlyme'):  ?>
+                                
+                            <option class="fas"value="onlyme"title="Chỉ mình tôi">&#xf023; Chỉ mình tôi</option>
+                            
+                            <?php endif; ?>
+                                </select>
+                        <?php endif;?>
                             </div>
                                 <div class="card-body">
                                 <hr>
-                                    <div class="row">
-                                       
+                                    <div class="row">                                   
                                         <div class="btn-group"style="position: relative;bottom:6px;left:23px">
-                                                <?php if (userLiked($posts['id'],$currentUser['id'])): ?>
-                                                <a class="btn"name="unlike"id="unlike"href="like.php?type=unlike&id=<?php echo $posts['id'] ?>"><i style='font-size:20px' class='far fa-thumbs-up'data-toggle="tooltip" title="Cảm xúc của bạn với status này!!"></i> Thích  <span class="badge badge-primary  rounded-circle" ><?php echo implode(" ",$countlike);?></span></a>
-                                                <?php else:?>
-                                                <a class="btn"name="like"id="like"href="like.php?type=like&id=<?php echo $posts['id'] ?>"style='color:black'><i style='font-size:20px' class='far fa-thumbs-up'data-toggle="tooltip" title="Cảm xúc của bạn với status này!!"></i> Thích  <span class="badge badge-light  rounded-circle"><?php echo implode(" ",$countlike);?></span></a>
-                                                <?php endif ?>
+                                            <?php if (userLiked($posts['id'],$currentUser['id'])): ?>
+                                            <a class="btn"name="unlike"id="unlike"href="like.php?type=unlike&id=<?php echo $posts['id'] ?>"><i style='font-size:20px' class='far fa-thumbs-up'data-toggle="tooltip" title="Cảm xúc của bạn với status này!!"></i> Thích  <span class="badge badge-primary  rounded-circle" ><?php echo implode(" ",$countlike);?></span></a>
+                                            <?php else:?>
+                                            <a class="btn"name="like"id="like"href="like.php?type=like&id=<?php echo $posts['id'] ?>"style='color:black'><i style='font-size:20px' class='far fa-thumbs-up'data-toggle="tooltip" title="Cảm xúc của bạn với status này!!"></i> Thích  <span class="badge badge-light  rounded-circle"><?php echo implode(" ",$countlike);?></span></a>
+                                            <?php endif ?>
                                         </div>&emsp;&emsp;
                                         <div >
                                         <form method="post">
@@ -217,63 +202,63 @@ $get_frnd_nums = get_all_friends($user, false);
                                                     </div>
                                         <hr>
                                         </div>
+                                        <hr>
+                                    </div>
                                     
-                                        <?php $getcomment=getcomment($posts['id']);
-                                   
-                                       ?>
-                                        <?php if(usercommentd($posts['id'],$currentUser['id'])): ?>
-                                        <div class="target" style="height:200px;overflow:scroll;" >
-                                            <?php foreach ($getcomment as $postss):?>
-                                                
-                                           <div class="card" >
-                                           <div class="card-body">
-                                                        <h5 class="card-title">
-                                                            <?php if($postss['picture']):?> 
-                                                            <img style="width: 50px;height: 50px" class="card-img-top border border-primary" src="avatar.php?id=<?php echo $postss['userId']?>">  
-                                                            <?php else: ?>
-                                                            <img src="avatars/no-avatar.jpg" style="width: 50px;height: 50px" class="card-img-top border border-primary">
-                                                            <?php endif ?> 
-                                                            <a href="profile.php?id=<?php echo $postss['userId'] ?>"><div style="position: absolute; left:80px;top:20px " ><?php echo $postss['Fullname']?> </div> </a>
-                                                        </h5> 
+                                    <?php $getcomment=getcomment($posts['id']);
                                 
-                                                        <p class="card-text"style="position: absolute; left:80px;top:50px" > Bình luận lúc: 
-                                                            <?php echo $postss['createdAt'];?>
-                                                        </p>
-                                                        <p >
-                                                            <?php echo $postss['content'];?>
-                                                        </p>
-                                                    <div class="col"style="text-align: right;position: absolute; left:8px;top:8px ">
-                                          
-                                                        <button  type="submit" name="deletecomment" value = <?php echo $postss['id_'] ?>  class="btn btn-danger" >Xóa</button>   
-                                                                  
-                                                                        <?php 
-                                                                        if(isset($_POST['deletecomment']))
-                                                                        {
-                                                                            $value_commnet=$_POST['deletecomment'];
-                                                                           
-                                                                            deletecomment($value_commnet);
-                                                                           header("Location: index.php");
-                                                                            }
-                                                                        ?>
-                                                      
-                                                        </div>  
-                                                        </div>  
-                                                </div>
-                                            <?php endforeach ?>
-                                                            </div>
-                                        <?php else:?>
-                                                <div></div>
-                                        <?php endif?>
+                                    ?>
+                                    <?php if(usercommentd($posts['id'],$currentUser['id'])): ?>
+                                    <div class="target" style="height:200px;overflow:scroll;" >
+                                        <?php foreach ($getcomment as $postss):?>
+                                            
+                                        <div class="card" >
+                                        <div class="card-body">
+                                                    <h5 class="card-title">
+                                                        <?php if($postss['picture']):?> 
+                                                        <img style="width: 50px;height: 50px" class="card-img-top border border-primary" src="avatar.php?id=<?php echo $postss['userId']?>">  
+                                                        <?php else: ?>
+                                                        <img src="avatars/no-avatar.jpg" style="width: 50px;height: 50px" class="card-img-top border border-primary">
+                                                        <?php endif ?> 
+                                                        <a href="profile.php?id=<?php echo $postss['userId'] ?>"><div style="position: absolute; left:80px;top:20px " ><?php echo $postss['Fullname']?> </div> </a>
+                                                    </h5> 
+                            
+                                                    <p class="card-text"style="position: absolute; left:80px;top:50px" > Bình luận lúc: 
+                                                        <?php echo $postss['createdAt'];?>
+                                                    </p>
+                                                    <p >
+                                                        <?php echo $postss['content'];?>
+                                                    </p>
+                                                <div class="col"style="text-align: right;position: absolute; left:8px;top:8px ">
+                                        
+                                                    <button  type="submit" name="deletecomment" value = <?php echo $postss['id_'] ?>  class="btn btn-danger" >Xóa</button>   
+                                                                
+                                                                    <?php 
+                                                                    if(isset($_POST['deletecomment']))
+                                                                    {
+                                                                        $value_commnet=$_POST['deletecomment'];
+                                                                        
+                                                                        deletecomment($value_commnet);
+                                                                        header("Location: index.php");
+                                                                        }
+                                                                    ?>
+                                                    
+                                                    </div>  
+                                                    </div>  
+                                            </div>
+                                        <?php endforeach ?>
+                                                        </div>
+                                    <?php else:?>
+                                            <div></div>
+                                    <?php endif?>
                                       
                                     
-                                        <form action="upcomment.php?type=upcommentindex&id=<?php echo $posts['id'] ?>" method="POST" >
-                                            <div class="form-group">
-                                                <textarea style="height:50px" class="form-control" name="contents" id="contents" rows="3"placeholder="Thêm bình luận..."></textarea>                                
-                                            </div>        
-                                            <button type="submit" class="btn btn-primary" name="upcomment">comment</button>
-                                        </form>	
-                                     
-                            
+                                    <form action="upcomment.php?type=upcommentindex&id=<?php echo $posts['id'] ?>" method="POST" >
+                                        <div class="form-group">
+                                            <textarea style="height:50px" class="form-control" name="contents" id="contents" rows="3"placeholder="Thêm bình luận..."></textarea>                                
+                                        </div>        
+                                        <button type="submit" class="btn btn-primary" name="upcomment">comment</button>
+                                    </form>	                                                          
                             </div>        
                     </div>
                 </div><br>

@@ -28,8 +28,8 @@ $get_all_friends = get_all_friends($userId, true);
             <div class="all_users">
             <h3>All friends</h3>
             <div class="usersWrapper">
-                        <?php
-                        $check=null;
+                <?php
+                $check=null;
                 if($get_frnd_num > 0){
                     foreach($get_all_friends as $row){
                         $checks=$row->picture;
@@ -45,7 +45,7 @@ $get_all_friends = get_all_friends($userId, true);
                     echo '<h4>Dont have friends!</h4>';
                 }
                 ?>
-                       </div>
+            </div>
         </div>
 	</div>
 </body>
