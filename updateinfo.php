@@ -4,7 +4,6 @@ require_once 'init.php';
 if(!$currentUser){
     header('Location: index.php');
     exit();
-
 }
 $user=$currentUser['id'];
 if(isset($_POST['save_info']))

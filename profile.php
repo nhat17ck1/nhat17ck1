@@ -105,21 +105,24 @@ $dateformat=  date_format($date,"d/m/y");
                               <img src="cover/default_cover.jpg" style=" box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
                             <?php endif ?>
                             <?php if($isFollowing && $isFollower): ?>
-                                          <div class="alert alert-primary" role="alert"style="position: absolute; right:150px;bottom:-10px">
-                                             Bạn bè
+                                          <div class="alert alert-primary" role="alert"style="position: absolute; right:150px;bottom:-7px; height:38px;">
+                                             <strong style="position: relative;bottom:7px">Bạn bè</strong>
                                           </div>
+                                          <button style="position: absolute; right:260px;bottom:10px"class="btn btn-light"><a href="conversation.php?id=<?php echo $profile['id'];?>"><span style="color:dimgrey" class='fab fa-facebook-messenger'><b style="color:dark"> Nhắn tin</b></span></a></button>
                                           <form method="POST" action="remove-friend.php">
                                               <input type="hidden" name="id" value="<?php echo $_GET['id'] ; ?>">
                                           <button type="submit" class="btn btn-primary"style="position: absolute; right:20px;bottom:10px"> Hủy bạn bè </button>
                                           </form>
                                       <?php else: ?>
                                       <?php if ($isFollowing && !$isFollower):?>
+                                        <button style="position: absolute; right:200px;bottom:10px"class="btn btn-light"><a href="conversation.php?id=<?php echo $profile['id'];?>"><span style="color:dimgrey" class='fab fa-facebook-messenger'><b style="color:dark"> Nhắn tin</b></span></a></button>
                                           <form method="POST" action="remove-friend.php">
                                               <input type="hidden" name="id" value="<?php echo $_GET['id'] ; ?>">
                                           <button type="submit" class="btn btn-primary"style="position: absolute; right:20px;bottom:10px"> Xóa yêu cầu kết bạn </button>
                                           </form>
                                       <?php endif ?>
                                       <?php if (!$isFollowing && $isFollower):?>
+                                        <button style="position: absolute; right:420px;bottom:10px"class="btn btn-light"><a href="conversation.php?id=<?php echo $profile['id'];?>"><span style="color:dimgrey" class='fab fa-facebook-messenger'><b style="color:dark"> Nhắn tin</b></span></a></button>
                                           <form method="POST" action="remove-friend.php">
                                               <input type="hidden" name="id" value="<?php echo $_GET['id'] ; ?>">
                                           <button type="submit" class="btn btn-primary"style="position: absolute; right:20px;bottom:10px"> Hủy yêu cầu kết bạn </button>
@@ -132,9 +135,10 @@ $dateformat=  date_format($date,"d/m/y");
                                       <?php if (!$isFollower && !$isFollowing):?>
                                           <?php if($profile['id']==$currentUser['id']):?>
                                           <?php else: ?>
+                                            <button style="position: absolute; right:200px;bottom:10px"class="btn btn-light"><a href="conversation.php?id=<?php echo $profile['id'];?>"><span style="color:dimgrey" class='fab fa-facebook-messenger'><b style="color:dark"> Nhắn tin</b></span></a></button>
                                           <form method="POST" action="add-friend.php">
                                               <input type="hidden" name="id" value="<?php echo $_GET['id'] ; ?>">
-                                          <button type="submit" class="btn btn-primary" name="btnclickSend" style="position: absolute; right:20px;bottom:10px">Gửi yêu cầu kết bạn</button>
+                                          <button type="submit" class="btn btn-primary" name="btnclickSend" id="btnclickSend" style="position: absolute; right:20px;bottom:10px">Gửi yêu cầu kết bạn</button>
                                           </form>
                                           <?php endif ?>
                                       <?php endif ?>
@@ -448,18 +452,19 @@ $dateformat=  date_format($date,"d/m/y");
                               <p class="card-text"> Đăng lúc: 
                               <?php echo $posts['createAt'];?>
                               </p>
+                              <p class="card-text">
+                              <?php echo $posts['content'];?>
+                              </p>
                               <p class="card-text"><center>
                               <?php if($posts['picture_post']):?> 
-                              <?php echo '<img src="data:image/jpeg;base64,'.base64_encode( $posts['picture_post']).'"/class="rounded mx-auto d-block" style="width:45%;height:40% ">'?>
+                              <?php echo '<img src="data:image/jpeg;base64,'.base64_encode( $posts['picture_post']).'"/class="rounded mx-auto d-block" style="width:100%;height:100% ">'?>
                               <?php else: ?>
                               <!-- <img src="icon/no-image.png" style="width:45%;height:40% " class="card-img-top"> -->
                               <?php endif ?> 
                               </center>
                               </p>
                       
-                              <p class="card-text">
-                              <?php echo $posts['content'];?>
-                              </p>
+                             
                               <form  method="POST">
                               <div class="col"style="text-align: right;position: absolute; left:8px;top:8px ">
                                   <?php if($posts['Fullname'] == $currentUser['displayName']):?>
@@ -499,20 +504,26 @@ $dateformat=  date_format($date,"d/m/y");
                                             header("Location: profile.php?id=$userId");
                                             }
                                         ?>
-                               
+                        
                             
                                <button type="submit" name="delete_post_profile" value = <?php echo $posts['id'] ?>  class="btn btn-danger" >Xóa</button>  
                                 <?php 
                                   if(isset($_POST['delete_post_profile']))
                                   {
                                     $value = $_POST['delete_post_profile'];
+                                    
                                     if (userLiked($posts['id'],$currentUser{'id'})){
-                                      deletelike($currentUser['id'],$posts['id']);
+                                      deletelike($posts['id']);
+                                      deleteallcomment($posts['id']);
+                                      var_dump($value);
                                       deletepost($value);
                                       header("Location: profile.php?id=$userId");;
                                       }else{
+                                      deleteallcomment($posts['id']);
                                       deletepost($value);
-                                      header("Location: profile.php?id=$userId");}
+                                      var_dump($value);
+                                      header("Location: profile.php?id=$userId");
+                                    }
                                       }
                               
                                   ?>
@@ -542,8 +553,6 @@ $dateformat=  date_format($date,"d/m/y");
                                                 <h9 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i style='font-size:20px' class='fa fa-share'data-toggle="tooltip" title="Chia sẻ với bạn bè"></i> Chia sẻ </h9>
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="#">Chia sẻ ngay (Công khai)</a>
-                                                    <a class="dropdown-item" href="#">Chia sẻ ...</a>
-                                                    <a class="dropdown-item" href="#">Gửi dưới dạng tin nhắn</a>
                                                     <a class="dropdown-item" href="#">Chia sẻ trên dòng thời gian với bạn bè</a>
                                                     <a class="dropdown-item" href="#">Chia sẻ lên trang</a>
                                                 </div>
