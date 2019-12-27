@@ -63,8 +63,8 @@ $get_frnd_nums = get_all_friends($user, false);
     <br>
 
 <div class="row">
-    <?php foreach ($phantrang  as $posts):?>
-        <?php if($posts['priority']=='public'||(($posts['priority']=='friend')&&($get_frnd_nums>0) )||($posts['priority']=='onlyme')&&($posts['Fullname']==$currentUser['displayName'])):  ?>
+    <?php foreach ($phantrang  as $posts):?>      
+        <?php if((($posts['priority']=='public')||($posts['priority']=='friend' && $get_frnd_nums!=null))||(($posts['priority']=='onlyme')&&($posts['Fullname']==$currentUser['displayName']))):  ?>
 
         <div class="col-sm-12">
             <form  method="POST">
@@ -79,11 +79,14 @@ $get_frnd_nums = get_all_friends($user, false);
                             <a href="profile.php?id=<?php echo $posts['userId'] ?>"><div style="position: absolute; left:126px;top:55px "><?php echo $posts['Fullname']?> </div> </a>
                         
                         </h5>
+                        <p class="card-body">
+                            <?php echo $posts['content'];?>
+                        </p>
                         <p class="card-text"><center>
                         <?php if($posts['picture_post']):?> 
-                        <?php echo '<img src="data:image/jpeg;base64,'.base64_encode( $posts['picture_post']).'"/class="rounded mx-auto d-block" style="width:70%;height:80% ">'?>
+                        <?php echo '<img src="data:image/jpeg;base64,'.base64_encode( $posts['picture_post']).'"/class="rounded mx-auto d-block" style="width:100%;height:100% ">'?>
                         <?php else: ?>
-                        <!-- <img src="icon/no-image.png" style="width:45%;height:40% " class="card-img-top"> -->
+                        
                         <?php endif ?> 
                         </center>
                         </p>
@@ -99,11 +102,7 @@ $get_frnd_nums = get_all_friends($user, false);
                         <p class="card-text"style="position: absolute; left:126px;top:100px "> Đăng lúc: 
                             <?php echo $posts['createAt'];?>
                         </p>
-
-                        <p class="card-body">
-                            <?php echo $posts['content'];?>
-                        </p>
-              
+       
                         <?php $countlike=getLikes($posts['id']);
                              $countcommemnt=getcountcomments($posts['id'])
                         ?>
@@ -111,7 +110,7 @@ $get_frnd_nums = get_all_friends($user, false);
                   
 
                         <div class="col"style="text-align: right;position: absolute; left:8px;top:8px ">
-                        <?php if($posts['Fullname'] == $currentUser['displayName']):?>
+                        <?php if($posts['userId'] == $currentUser['id']):?>
                          
                             <select class="fas btn" id="priority3"name="priority3"  style="background-color: #FFFFFF">
                             
@@ -140,34 +139,24 @@ $get_frnd_nums = get_all_friends($user, false);
                             <?php 
                                 if(isset($_POST['priority3_btn']))
                                 {
-                                    $valuebtn=$_POST['priority3_btn'];
-                                    $value = $_POST['priority3'];
-                                    updateProrisifity($valuebtn,$value);
-                        
-                                    header("Location: index.php");
-                                }
-                            ?>
-                               
-                            
-                            <button type="submit" name="delete" value = <?php echo $posts['id'] ?>  class="btn btn-danger" >Xóa</button>   
-                            <?php 
-                            if(isset($_POST['delete']))
-                            {
-                                $value = $_POST['delete'];
-                        
-                                if (userLiked($posts['id'],$currentUser{'id'})){
-                                    deletelike($currentUser['id'],$posts['id']);
+                                    $value = $_POST['delete'];
+                                    
+                                    if (userLikedd($posts['id'])){
+                                        deletelike($posts['id']);
+                                        deleteallcomment($posts['id']);
+                                      
+                                        deletepost($value);
+                                       header("Location: index.php");
+                                    }else{
                                     deleteallcomment($posts['id']);
                                     deletepost($value);
                                     header("Location: index.php");
-                                }else{
-                                deletepost($value);
-                                header("Location: index.php");}
                                 }
-                            ?>
-                        <?php else:?>
-                            <select class="fas btn" id="priority3"name="priority3"  style="background-color: #FFFFFF">
-                            <?php if($posts['priority']=='public'):  ?>
+                                    }
+                                ?>
+                            <?php else:?>
+                                <select class="fas btn" id="priority3"name="priority3"  style="background-color: #FFFFFF">
+                                <?php if($posts['priority']=='public'):  ?>
 
                             <option class="fas" value="public"title="Mọi người">&#xf57d; Mọi người</option>
                             
@@ -197,17 +186,21 @@ $get_frnd_nums = get_all_friends($user, false);
                                         <div >
                                         <form method="post">
                                             <h9 aria-haspopup="true" aria-expanded="false"><i style='font-size:20px' class='far fa-comment-alt'data-toggle="tooltip" title="Cảm nghĩ của bạn về bài viết này!"></i> Bình luận<span class="badge badge-light  rounded-circle"><?php echo implode(" ",$countcommemnt);?></span></h9>
-                                            </form>                               
-                                        </div>&emsp;&emsp;                                                              
-                                        <div>
-                                            <h9 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i style='font-size:20px' class='fa fa-share'data-toggle="tooltip" title="Chia sẻ với bạn bè"></i> Chia sẻ </h9>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="#">Chia sẻ ngay (Công khai)</a>
-                                                <a class="dropdown-item" href="#">Chia sẻ ...</a>
-                                                <a class="dropdown-item" href="#">Gửi dưới dạng tin nhắn</a>
-                                                <a class="dropdown-item" href="#">Chia sẻ trên dòng thời gian với bạn bè</a>
-                                                <a class="dropdown-item" href="#">Chia sẻ lên trang</a>
-                                            </div>
+                                            </form>
+
+                                 
+                                        </div>&emsp;&emsp;
+                                       
+                                            
+                                                    <div>
+                                                        <h9 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i style='font-size:20px' class='fa fa-share'data-toggle="tooltip" title="Chia sẻ với bạn bè"></i> Chia sẻ </h9>
+                                                        <div class="dropdown-menu">
+                                                            <a class="dropdown-item" href="#">Chia sẻ ngay (Công khai)</a>
+                                                            <a class="dropdown-item" href="#">Chia sẻ trên dòng thời gian với bạn bè</a>
+                                                            <a class="dropdown-item" href="#">Chia sẻ lên trang</a>
+                                                        </div>
+                                                    </div>
+                                        <hr>
                                         </div>
                                         <hr>
                                     </div>
@@ -309,7 +302,7 @@ $get_frnd_nums = get_all_friends($user, false);
                     <?php endif ?>
                 <?php endfor;?>
                 <?php if($page>=$pages):?>
-                <li class="page-item disabled"><a class="page-link" href="?page=<?php echo $page+1;?>">Next</a>
+                <li class="page-item "><a class="page-link" href="?page=<?php echo $page=1;?>">Next</a>
                 </li>
                 <?php else:?>
                     <li class="page-item "><a class="page-link" href="?page=<?php echo $page+1;?>">Next</a>
