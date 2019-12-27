@@ -11,7 +11,7 @@ require 'init.php';
 <?php 
 
 $coded = $_GET['code'];
-$id= substr( $coded,0,1);
+$id= substr( $coded,0,1 );
 $code=substr( $coded,2,10);
 $findpass=findUserByID($id);
 $currentPassword=$code;
