@@ -3,6 +3,7 @@ require_once 'init.php';
 if(isset($_GET['type'],$_GET['id'])){
     $type=$_GET['type'];
     $id=(int)$_GET['id'];
+    $content="vừa thích bài viết!";
     switch($type){
         case'like':
             $db1->query("INSERT INTO posts_like (postIdd,userId)
@@ -15,6 +16,7 @@ if(isset($_GET['type'],$_GET['id'])){
                 and postIdd={$id} )
             Limit 1
             ");
+            upnotice($currentUser['id'],$id, $content);
             break;
         case'unlike':
                 $db1->query("DELETE FROM posts_like WHERE userId={$currentUser['id']} AND postIdd={$id}

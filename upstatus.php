@@ -6,7 +6,7 @@ if(!$currentUser){
 }
 $content=$_POST['content'];
 $prioty=$_POST['priority'];
-
+$content_notice="Vừa mới đăng bài viết!";
 if(isset($_POST['index_post'])){
     $check = getimagesize($_FILES["picture_post_icon"]["tmp_name"]);
     if($check !== false) {
@@ -19,9 +19,11 @@ if(isset($_POST['index_post'])){
           imagejpeg($newImage);
           $postImage=ob_get_contents();
           ob_end_clean();
+          upnotice($currentUser['id'],null,$content_notice);
           upstatus($currentUser['id'],$content,$postImage,$prioty);
         }else {
             $postImage=null;
+            upnotice($currentUser['id'],null,$content_notice);
             upstatus($currentUser['id'],$content,$postImage,$prioty);
         }
      

@@ -13,6 +13,12 @@ function detectPage(){
     $page =$parts[0];
     return $page;
 }
+function getUsers()
+{
+	global $db;
+	$stmt = $db ->query("SELECT * from users");
+	return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+}
 function findUserByEmail($email)
 {
     global $db;
@@ -248,7 +254,7 @@ function createUser($displayName, $email, $password,$numberPhone,$birthday) {
 
                   foreach($all_users as $row){
                       if($row->userId1 == $my_id){
-                          $get_user = "SELECT id, displayName, picture FROM `users` WHERE id = ?";
+                          $get_user = "SELECT * FROM `users` WHERE id = ?";
                           $get_user_stmt = $db->prepare($get_user);
                           $get_user_stmt->execute([$row->userId2]);
                           array_push($return_data, $get_user_stmt->fetch(PDO::FETCH_OBJ));
@@ -317,19 +323,19 @@ function createUser($displayName, $email, $password,$numberPhone,$birthday) {
         $stmt->execute(array($postId,$userId,$content));
        return $db->lastInsertId();
     }
-    function deletelike($iduser,$idpost) {
+    function deletelike($idpost) {
       global $db;
-      $stmt = $db->prepare("DELETE FROM posts_like WHERE userId=? AND postIdd=? ");
-      $stmt->execute(array($iduser,$idpost));
+      $stmt = $db->prepare("DELETE FROM posts_like WHERE postIdd=? ");
+      $stmt->execute(array($idpost));
     }
     function getcomment($id){
-  global $db;
-  $stmt=$db->prepare("SELECT p.id,pc.userId,u.picture,u.displayName as Fullname,pc.content,pc.createdAt ,p.picture_post,pc.id_ FROM posts_comment AS pc JOIN users as u on  u.id= pc.userId JOIN posts as p where p.id= pc.postId and pc.postId=? ORDER BY pc.createdAt DESC");
-  $stmt->execute(array($id));
-  $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  return $posts;
-}
-function usercommentd($post_id,$userid)
+        global $db;
+        $stmt=$db->prepare("SELECT p.id,pc.userId,u.picture,u.displayName as Fullname,pc.content,pc.createdAt ,p.picture_post,pc.id_ FROM posts_comment AS pc JOIN users as u on  u.id= pc.userId JOIN posts as p where p.id= pc.postId and pc.postId=? ORDER BY pc.createdAt DESC");
+        $stmt->execute(array($id));
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $posts;
+      }
+      function usercommentd($post_id,$userid)
       {
         global $db1;
 
@@ -359,3 +365,91 @@ function usercommentd($post_id,$userid)
         $stmt = $db->prepare("DELETE FROM posts_comment WHERE postId=? ");
         $stmt->execute(array($idpost));
       }
+      function userLikedd($post_id)
+      {
+        global $db1;
+
+        $sql = "SELECT * FROM posts_like WHERE postIdd=$post_id ";
+        $result = mysqli_query($db1, $sql);
+        if (mysqli_num_rows($result) > 0) {
+          return true;
+        }else{
+          return false;
+        }
+      }
+      function getLatestConversations($userId) {
+        global $db;
+        $stmt = $db->prepare("SELECT userId2 AS id, u.displayName, u.picture FROM messages AS m LEFT JOIN users AS u ON u.id = m.userId2 WHERE userId1 = ? GROUP BY userId2 ORDER BY createdAt DESC");
+        $stmt->execute(array($userId));
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        for ($i = 0; $i < count($result); $i++) {
+          $stmt = $db->prepare("SELECT * FROM messages WHERE userId1 = ? AND userId2 = ? ORDER BY createdAt DESC LIMIT 1");
+          $stmt->execute(array($userId, $result[$i]['id']));
+          $lastMessage = $stmt->fetch(PDO::FETCH_ASSOC);
+          $result[$i]['lastMessage'] = $lastMessage;
+        }
+        return $result;
+      }
+      function sendMessage($userId1, $userId2, $content) {
+        global $db;
+        $stmt = $db->prepare("INSERT INTO messages (userId1, userId2, content, type, createdAt) VALUE (?, ?, ?, ?, CURRENT_TIMESTAMP())");
+        $stmt->execute(array($userId1, $userId2, $content, 0));
+        $id = $db->lastInsertId();
+        $stmt = $db->prepare("SELECT * FROM messages WHERE id = ? ");
+        $stmt->execute(array($id));
+        $newMessage = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $db->prepare("INSERT INTO messages (userId2, userId1, content, type, createdAt) VALUE (?, ?, ?, ?, ?)");
+        $stmt->execute(array($userId1, $userId2, $content, 1, $newMessage['createdAt']));
+      }
+      function getMessagesWithUserId($userId1, $userId2) {
+        global $db;
+        $stmt = $db->prepare("SELECT * FROM messages WHERE userId1 = ? AND userId2 = ? ORDER BY createdAt");
+        $stmt->execute(array($userId1, $userId2));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      }
+      function deleteMessageWithId($id)
+      {
+          global $db;
+          $stmt = $db->prepare("DELETE FROM messages WHERE id=?");
+          $stmt->execute(array($id));
+      }
+      function deleteAllMessageId($userId1, $userId2)
+        {
+          global $db;
+          $stmt = $db->prepare("DELETE FROM messages WHERE userId1 = ? AND userId2 = ?");
+          $stmt->execute(array($userId1, $userId2));
+        }
+        function getrowmes($userId) {
+          global $db;
+          $stmt = $db->prepare("SELECT userId2 AS id, u.displayName, u.picture FROM messages AS m LEFT JOIN users AS u ON u.id = m.userId2 WHERE userId1 = ? GROUP BY userId2 ORDER BY createdAt DESC");
+          $stmt->execute(array($userId));
+          $result = $stmt->rowCount();
+          return $result;
+        }
+        function upnotice($userId,$postId,$content){
+          global $db;
+          $stmt=$db->prepare("INSERT INTO notifications (postId_notice,userId_notice,content) VALUES (? , ?,?)");
+          $stmt->execute(array($postId,$userId,$content));
+         return $db->lastInsertId();
+      }
+      function getNoticeWithUserId() {
+        global $db;
+        $stmt = $db->prepare("SELECT * FROM notifications join users on users.id=notifications.userId_notice  ORDER BY createAt DESC");
+        $stmt->execute(array());
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      }
+      function deleteOneNotice($id)
+      {
+        global $db;
+        $stmt = $db->prepare("DELETE FROM notifications WHERE id = ? ");
+        $stmt->execute(array($id));
+      }
+      
+      function getfriend($id1,$id2)
+      {
+        global $db;
+        $stmt = $db->prepare("SELECT * FROM  friendship WHERE userId1 = ? AND userId2 = ? AND accept = 1");
+        $stmt->execute(array($id1,$id2));
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+      

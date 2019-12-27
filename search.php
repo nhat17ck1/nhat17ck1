@@ -17,6 +17,7 @@ ob_start();
     <div style="text-align: center;">
         <h4>Kết quả tìm kiếm cho '<?php echo $name;?>'</h4>    
     </div>
+    <br> 
   <div class="card" style="width: 80%; margin: 0 auto; border: none;"><h4>Mọi người</h4></div>
   <br>  
   <div class="card"style="width: 80%; margin: 0 auto; border: none;">
