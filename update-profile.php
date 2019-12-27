@@ -5,7 +5,6 @@ if(!$currentUser){
 }
 //require 'functions.php';
 ?>
-
 <?php
     include 'header.php';
 ?>
